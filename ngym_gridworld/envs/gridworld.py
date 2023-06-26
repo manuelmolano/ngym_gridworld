@@ -25,7 +25,9 @@ class GridWorld(ngym.TrialEnv):
         'paper_name': '',
         'tags': ['perceptual', 'navigation', 'gridworld']
     }
-    def __init__(self, size=5, start=(0, 0), goal=(4, 4), obstacles=None):
+    def __init__(self, dt=100, size=5, start=(0, 0),
+                 goal=(4, 4), obstacles=None):
+        super().__init__(dt=dt)
         self.size = size
         self.start = start
         self.goal = goal
@@ -34,6 +36,7 @@ class GridWorld(ngym.TrialEnv):
                                             shape=(9,), dtype=np.float32)
         self.action_space = spaces.Discrete(5)
         self.rewards = {'correct': 50, 'obstacle': -2, 'fail': -1}
+        self.position = self.start
 
     def _new_trial(self, **kwargs):
         """
@@ -43,6 +46,7 @@ class GridWorld(ngym.TrialEnv):
         Optionally, you can set:
         The ground truth: the correct answer for the created trial.
         """
+        self.position = self.start
 
     def _step(self, action):
         """
@@ -89,7 +93,8 @@ class GridWorld(ngym.TrialEnv):
                     view.append(-1)
                 elif self.position == self.goal:
                     view.append(2)
-                else:
+                elif i != 0 or j != 0:
                     view.append(0)
+
         return np.array(view)
 

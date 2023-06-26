@@ -9,22 +9,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def render(render_flag, size, position, goal, obstacles):
-        if not render_flag:
-            return
-        grid = np.zeros((size, size))
-        grid[position] = 1  # agent's position marked with 1
-        grid[goal] = 0.5  # goal position marked with 0.5
-        for obstacle in obstacles:
+def render(task, ax=None):
+        grid = np.zeros((task.size, task.size))
+        grid[task.position] = 1  # agent's position marked with 1
+        grid[task.goal] = 2  # goal position marked with 0.5
+        for obstacle in task.obstacles:
             grid[obstacle] = -1
-        plt.figure(figsize=(5,5))
-        plt.imshow(grid, cmap='Pastel1')
-        plt.show()
-
-def oneD_to_twoD(oneD):
+        if ax is None:
+             _, ax = plt.subplots()
+        ax.imshow(grid, vmin=-1, vmax=2, cmap='hot')
+                  
+def oneD_to_twoD_view(oneD, ax=None):
         view = np.zeros((3, 3))
+        view[1, 1] = 1
         counter = 0
-        for i in range(0, 3):
-            for j in range(0, 3):
-                view[i, j] = oneD[counter]
-                counter += 1
+        for i in range(3):
+            for j in range(3):
+                if i != 1 or j != 1:
+                    view[i, j] = oneD[counter]
+                    counter += 1
+        if ax is None:
+             _, ax = plt.subplots()
+        ax.imshow(view, cmap='hot', vmin=-1, vmax=2)
