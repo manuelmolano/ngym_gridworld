@@ -59,14 +59,18 @@ class GridWorld(ngym.TrialEnv):
                 boolean indicating the end of the trial, info['new_trial']
         """
         new_trial = False
-        if action == 0:  # Move up
-            self.position = (max(self.position[0] - 1, 0), self.position[1])
-        elif action == 1:  # Move right
-            self.position = (self.position[0], min(self.position[1] + 1, self.size - 1))
-        elif action == 2:  # Move down
-            self.position = (min(self.position[0] + 1, self.size - 1), self.position[1])
-        elif action == 3:  # Move left
-            self.position = (self.position[0], max(self.position[1] - 1, 0))
+        candidate = self.position
+        if action == 1:  # Move up
+            candidate = (max(self.position[0] - 1, 0), self.position[1])
+        elif action == 2:  # Move right
+            candidate = (self.position[0], min(self.position[1] + 1, self.size - 1))
+        elif action == 3:  # Move down
+            candidate = (min(self.position[0] + 1, self.size - 1), self.position[1])
+        elif action == 4:  # Move left
+            candidate = (self.position[0], max(self.position[1] - 1, 0))
+
+        if candidate not in self.obstacles:
+            self.position = candidate
 
         if self.position == self.goal:
             reward = self.rewards['correct']
@@ -89,7 +93,7 @@ class GridWorld(ngym.TrialEnv):
             for j in range(-1, 2):
                 if self.position[0] + i < 0 or self.position[0] + i >= self.size or \
                    self.position[1] + j < 0 or self.position[1] + j >= self.size or \
-                   self.position in self.obstacles:
+                   (self.position[0] + i, self.position[1] + j) in self.obstacles:
                     view.append(-1)
                 elif self.position == self.goal:
                     view.append(2)
