@@ -25,18 +25,15 @@ class GridWorld(ngym.TrialEnv):
         'paper_name': '',
         'tags': ['perceptual', 'navigation', 'gridworld']
     }
-    def __init__(self, size=5, start=(0, 0), goal=(4, 4)):
+    def __init__(self, size=5, start=(0, 0), goal=(4, 4), obstacles=None):
         self.size = size
         self.start = start
         self.goal = goal
+        self.obstacles = obstacles or []
         self.observation_space = spaces.Box(-np.inf, np.inf,
                                             shape=(9,), dtype=np.float32)
         self.action_space = spaces.Discrete(5)
-        self.rewards = {'correct': 50, 'fail': -1}
-
-    def reset(self):
-        self.position = self.start
-        return self.position
+        self.rewards = {'correct': 50, 'obstacle': -2, 'fail': -1}
 
     def _new_trial(self, **kwargs):
         """
@@ -68,26 +65,31 @@ class GridWorld(ngym.TrialEnv):
             self.position = (self.position[0], max(self.position[1] - 1, 0))
 
         if self.position == self.goal:
-            reward = 50
+            reward = self.rewards['correct']
             new_trial = True
+        elif self.position in self.obstacles:
+            reward = self.rewards['obstacle']
         else:
-            reward = -1
+            reward = self.rewards['fail']
 
-        return self.position, reward, False, {'new_trial': new_trial}
+        return self.view, reward, False, {'new_trial': new_trial}
 
+    @property
+    def view(self):
+        """
+        Return the current view of the environment from the agent's perspective.
+        """
+        # get surrounding view
+        view = []
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if self.position[0] + i < 0 or self.position[0] + i >= self.size or \
+                   self.position[1] + j < 0 or self.position[1] + j >= self.size or \
+                   self.position in self.obstacles:
+                    view.append(-1)
+                elif self.position == self.goal:
+                    view.append(2)
+                else:
+                    view.append(0)
+        return np.array(view)
 
-    def render(self, render_flag):
-            if not render_flag:
-                return
-            grid = np.zeros((self.size, self.size))
-            grid[self.position] = 1  # agent's position marked with 1
-            grid[self.goal] = 0.5  # goal position marked with 0.5
-            plt.figure(figsize=(5,5))
-            plt.imshow(grid, cmap='Pastel1')
-            plt.show()
-
-
-if __name__ == '__main__':
-   task = GridWorld()
-   task.reset()
-   print(task)
