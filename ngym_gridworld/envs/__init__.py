@@ -1,1 +1,1 @@
-"""ngym_template environments."""
+"""ngym_gridworld environments."""

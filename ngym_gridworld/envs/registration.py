@@ -29,9 +29,9 @@ def _get_envs(foldername=None, env_prefix=None, allow_list=None):
     if allow_list is None:
         allow_list = list()
 
-    # Root path of ngym_template.envs folder
+    # Root path of ngym_gridworld.envs folder
     env_root = Path(__file__).resolve().parent
-    lib_root = 'ngym_template.envs.'
+    lib_root = 'ngym_gridworld.envs.'
     if foldername is not None:
         env_root = env_root / foldername
         lib_root = lib_root + foldername + '.'
@@ -45,7 +45,7 @@ def _get_envs(foldername=None, env_prefix=None, allow_list=None):
 
     env_dict = {}
     for filename in filenames:
-        # lib = 'ngym_template.envs.collections.' + l
+        # lib = 'ngym_gridworld.envs.collections.' + l
         lib = lib_root + filename
         module = importlib.import_module(lib)
         for name, val in getmembers(module):
@@ -64,7 +64,7 @@ ALL_EXTENDED_ENVS = ALL_NATIVE_ENVS
 
 
 def all_envs(tag=None, psychopy=False, contrib=False, collections=False):
-    """Return a list of all envs in ngym_template."""
+    """Return a list of all envs in ngym_gridworld."""
     envs = ALL_NATIVE_ENVS.copy()
     env_list = sorted(list(envs.keys()))
     if tag is None:
