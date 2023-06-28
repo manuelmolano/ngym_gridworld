@@ -15,6 +15,8 @@ def render(task, ax=None):
         grid[task.goal] = 2  # goal position marked with 0.5
         for obstacle in task.obstacles:
             grid[obstacle] = -1
+        # pad grid with -1
+        grid = np.pad(grid, pad_width=1, mode='constant', constant_values=-1)
         if ax is None:
              _, ax = plt.subplots()
         ax.imshow(grid, vmin=-1, vmax=2, cmap='hot')
