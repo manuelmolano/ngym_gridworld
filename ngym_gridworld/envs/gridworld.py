@@ -26,11 +26,12 @@ class GridWorld(ngym.TrialEnv):
         'tags': ['perceptual', 'navigation', 'gridworld']
     }
     def __init__(self, dt=100, size=5, start=(0, 0),
-                 goal=(4, 4), obstacles=None):
+                 goal=(4, 4), obstacles=None, view_state=False):
         super().__init__(dt=dt)
         self.size = size
         self.start = start
         self.goal = goal
+        self.view_state = view_state
         self.obstacles = obstacles or []
         self.observation_space = spaces.Box(-np.inf, np.inf,
                                             shape=(9,), dtype=np.float32)
@@ -79,8 +80,8 @@ class GridWorld(ngym.TrialEnv):
             reward = self.rewards['obstacle']
         else:
             reward = self.rewards['fail']
-
-        return self.view, reward, False, {'new_trial': new_trial}
+        obs = self.view if self.view_state else self.position
+        return obs, reward, False, {'new_trial': new_trial}
 
     @property
     def view(self):
